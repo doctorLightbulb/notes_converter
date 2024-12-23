@@ -6,6 +6,7 @@ import functools
 import getpass
 import json
 import re
+import sqlite3
 from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
@@ -24,13 +25,6 @@ TEST_DATA_PATH = CWD / "tests"
 
 DATA_PATH = CWD / "data"
 TEMPLATE_PATH = CWD / "templates"
-CSV_PATH = (
-    ROOT_PATH
-    / "OneDrive"
-    / "Documents"
-    / "Sacred Records"
-    / "Gospel Library Notes (December 8, 2024).csv"
-)
 
 FIELD_NAMES = [
     "type",
@@ -143,6 +137,21 @@ def load_csv_files(files: Sequence[Union[Path, str]], field_names: List[str]):
         next(reader)  # Skip titles (first line)
         notes += [note for note in reader]
     return notes
+
+
+def open_database(database):
+    pass
+
+
+def commit_to_database(
+    database, files: Sequence[Union[Path, str]], field_names: List[str]
+):
+    for file in files:
+        reader = load_csv_as_dict(file, field_names=field_names)
+        next(reader)  # Skip titles (first line)
+        with sqlite3.connect(database) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT into VALUES(?, ?, ?)")
 
 
 def build_notes(
