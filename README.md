@@ -11,5 +11,5 @@ Welcome to `notes_converter`, a simple script that converts your exported `.csv`
 
 * ❌ Allows the user to manually organize the notes.
 * ❌ Permanently stores all notes for future retrieval.
-* ❌ Imports `.txt` files in meaningful ways.
+* ❌ Imports `.txt` files.
 * ❌ Imports handwritten notes.
