@@ -19,6 +19,7 @@ class NotesConverter:
     def __init__(self) -> None:
         self.input_path = []
         self.output_path = ""
+        self.template_path = None
 
     def convert(self):
         self.output_path = Path(self.output_path)
@@ -31,7 +32,11 @@ class NotesConverter:
         title_order = load_json(DATA_PATH / "standard_works_order.json")
         sorted_notes = sort_notes_by_title_and_verse(notes, title_order)
 
-        write_to_docx(sorted_notes, self.output_path)
+        write_to_docx(
+            notes=sorted_notes,
+            output_path=self.output_path,
+            template_path=self.template_path,
+        )
 
         return "".join(self.show_saved_status())
 

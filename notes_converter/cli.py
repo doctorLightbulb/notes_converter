@@ -15,13 +15,19 @@ def parse_args():
         "--input",
         type=str,
         action="append",
-        help="Input file names",
+        help="Input file names.",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         help="The path to the target file.",
+    )
+    parser.add_argument(
+        "-t",
+        "--template",
+        type=str,
+        help="The path to a custom template.",
     )
     return parser.parse_args()
 
@@ -35,11 +41,16 @@ class Cli:
         self.converter = converter
 
     def run(self):
-        notes_input_path = [Path(i) for i in self.args.input]
+        input_path = [Path(i) for i in self.args.input]
         output_path = Path(self.args.output)
 
-        self.converter.input_path = notes_input_path
+        # Required values:
+        self.converter.input_path = input_path
         self.converter.output_path = output_path
+
+        # Optional values:
+        if self.args.template:
+            self.converter.template_path = Path(self.args.template)
 
         status = self.converter.convert()
         print(status)

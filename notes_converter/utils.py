@@ -15,6 +15,7 @@ from typing import Dict, List, Sequence, Union
 import pytz
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE
+from docx.opc.exceptions import PackageNotFoundError
 from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
 
@@ -81,6 +82,10 @@ def remove_duplicates(func):
         return removed_exact_duplicates
 
     return wrapper_remove_duplicates
+
+
+class NoTemplate(Exception):
+    pass
 
 
 def load_json(path):
@@ -315,8 +320,41 @@ def write_to_txt(notes, output_path):
             f.write("\n" + note.source_location)
 
 
-def write_to_docx(notes, output_path: Union[str, Path]):
-    doc = Document(str(TEMPLATE_PATH / "default.docx"))
+def write_to_docx(
+    notes,
+    output_path: Union[str, Path],
+    template_path: Union[str, Path, None],
+):
+    """Write notes to a styled Word document.
+
+    Parameters
+    ----------
+    notes : A list of `note` objects.
+    output_path : The location to save the Word document.
+    template_path : A path to a Word document template.
+        `None` means that the default template will be used.
+
+    Returns
+    -------
+    A styled Word document in the given `output_path`.
+    """
+    # Is there a custom template path?
+    if template_path:
+        template = Path(template_path)
+        valid_template = template.exists() and template.suffix == ".docx"
+        if not valid_template:
+            template = TEMPLATE_PATH / "default.docx"
+    else:
+        template = TEMPLATE_PATH / "default.docx"
+
+    try:
+        doc = Document(str(template))
+    except PackageNotFoundError:
+        # This error is raised only when default.docx is open in another
+        # application. Aside from development, that should (in theory)
+        # never happen in production.
+        raise NoTemplate
+
     file_name = Path(output_path).stem
 
     # Clear existing template data
@@ -333,6 +371,10 @@ def write_to_docx(notes, output_path: Union[str, Path]):
                 continue
             doc.add_paragraph(body, style="Normal")
 
+        # TODO: an add_run() will be needed to use Word's
+        # built-in Hyperlink style. Can add_hyperlink() be
+        # modified to use add_run() and to add the hyperlink
+        # to that?
         p = doc.add_paragraph(style="Link")
         add_hyperlink(p, note.source_location, "Source: ")
 
