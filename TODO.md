@@ -20,3 +20,18 @@ The solution to a huge file:
 To make sorting easier, put each chapter and verse number in its own column.
 
 By the time the input files become too large to process at once, the output file will likely be too large, also. As `notes_converter` will already be exporting multiple files, why not separate especially large files into parts? Since we are dealing with scriptural references, we could name the different parts something like: "Gospel Library Study Notes (1 Nephi - 3 Nephi)."
+
+## Source Link Patterns
+
+The Scriptures and _Come, Follow Me_ have the same pattern:
+
+* Book
+* Chapter
+* Paragraph
+
+Articles from the _Ensign_, however, follow a slightly different pattern:
+
+* Year
+* Month
+* Article
+* Paragraph

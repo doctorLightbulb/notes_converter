@@ -1,6 +1,6 @@
 # README
 
-Welcome to `notes_converter`, a simple script that converts your exported `.csv` notes from the website version of the Gospel Library of the Church of Jesus Christ of Latter-day Saints into an orderly Word document.
+Welcome to `notes_converter`, a simple script that converts your exported `.csv` notes from [Gospel Library Online](https://www.churchofjesuschrist.org/study?lang=eng&platform=web) of the Church of Jesus Christ of Latter-day Saints into an orderly Word document.
 
 ## What it does
 
