@@ -26,8 +26,9 @@ class NotesConverter:
         self._smu = SystemMemory()
 
     def convert(self):
-        """Convert the specified files using either `self.convert_via_RAM`
-        or `self.convert_via_database`."""
+        """Convert the specified files using either
+        `self.convert_with_full_memory` or `self.convert_with_limited_memory`.
+        """
         self.output_path = Path(self.output_path)
 
         # Estimated memory needed to run the program
@@ -41,9 +42,11 @@ class NotesConverter:
         if enough_memory:
             sorted_notes = self.convert_with_full_memory(self.input_path)
         else:
-            # Remove once database is implemented
-            print("Switching to memory efficient mode...")
-            return
+            sorted_notes = self.convert_with_limited_memory(self.input_path)
+            # TODO: Pass the data from one generator to another. The second
+            # generator must convert each note into a namedtuple object in
+            # order to be used by write_to_docx()
+            return  # Remove for production
 
         write_to_docx(
             notes=sorted_notes,
@@ -55,7 +58,16 @@ class NotesConverter:
 
     def convert_with_full_memory(self, notes_paths):
         """Convert the notes by loading them all into memory
-        before writing them to a `.docx` file."""
+        before writing them to a `.docx` file.
+
+        Parameters
+        ----------
+        - notes_paths : The paths to the files to load.
+
+        Returns
+        -------
+        A list of notes built using a `namedtuple` object.
+        """
 
         merged_notes = load_csv_files(notes_paths, FIELD_NAMES)
         notes = build_notes(merged_notes, FIELD_NAMES)
@@ -66,8 +78,17 @@ class NotesConverter:
         sorted_notes = sort_notes_by_title_and_verse(notes, title_order)
         return sorted_notes
 
-    def convert_with_limited_memory(self):
-        """Convert and sort all notes using a `SQLite3` database."""
+    def convert_with_limited_memory(self, notes_paths):
+        """Convert and sort all notes using a `SQLite3` database.
+
+        Parameters
+        ----------
+        - notes_paths : The paths to the notes to be loaded.
+
+        Returns
+        -------
+        A generator object connected directly to the database.
+        """
         print("Low system memory.")
 
     def show_saved_status(self):
