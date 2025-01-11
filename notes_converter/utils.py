@@ -145,6 +145,91 @@ def load_csv_files(files: Sequence[Union[Path, str]], field_names: List[str]):
     return notes
 
 
+def extract_study_data(raw_data, name_maps):
+    """Extract scriptures' record, book, chapter and verse names and numbers
+    and return a dict."""
+
+    # TODO: Add allowance for paragraph ranges (i.e. =p4-p6).
+
+    def process_scriptures(raw_data):
+        """Extract book name, chapter and verse from `raw_data`.
+
+        Parameters
+        ----------
+        - raw_data : A list containing url elements.
+
+        Returns
+        -------
+        A list of keys and the book name, chapter and verse.
+        """
+        p_num = raw_data[-1:][0].split("=p")[-1:]  # Get paragraph number
+        c_num = raw_data[-1:][0].split("?")[0:1]  # Get chapter number
+        b_name = raw_data[-2:-1]  # Get book name
+
+        # Mapping for the opening and closing pages, such as title, references
+        # pronunciation, etc.
+        opening_closing_pages = ["three", "js", "eight", "introduction"]
+        if c_num[0] in opening_closing_pages:
+            data = raw_data[1:2] + c_num + p_num
+            keys = ["book", "sub_book", "verse"]
+            return keys, data
+
+        # Mapping for the main books.
+        data = raw_data[1:2] + b_name + c_num + p_num
+        keys = ["book", "sub_book", "chapter", "verse"]
+        return keys, data
+
+    def process_manuals(raw_data):
+        p_num = raw_data[-1:][0].split("=p")[-1:]  # Get paragraph number
+        c_num = raw_data[-1:][0].split("?")[0:1]  # Get chapter number
+        b_name = raw_data[1:2]  # Get book name
+
+        data = b_name + c_num + p_num
+        keys = ["manual", "chapter", "verse"]
+        return keys, data
+
+    def process_ensigns(raw_data):
+        p_num = raw_data[-1:][0].split("=p")[-1:]  # Get paragraph number
+        a_name = raw_data[-1:][0].split("?")[0:1]  # Get article name
+        e_month = raw_data[2:3]  # Get month
+        e_year = raw_data[1:2]  # Get Ensign year
+
+        data = e_year + e_month + a_name + p_num
+        keys = ["ensign", "month", "article", "verse"]
+        return keys, data
+
+    versions = {
+        "scriptures": process_scriptures,
+        "manual": process_manuals,
+        "ensign": process_ensigns,
+    }
+    data = raw_data.split("/")
+    record = data[4:5][0]
+    x = versions.get(record, process_scriptures)
+    key_maps, groups = x(data[4:])
+
+    # Map shorthand names to long-hand names.
+    values = [name_maps.get(i, i) for i in groups]
+
+    return dict(zip(key_maps, values))
+
+
+def build_study_references(data):
+    reference_numbers = f"{data["verse"]}"
+    books = ""
+    if "chapter" in data.keys():
+        reference_numbers = f"{data["chapter"]}:{data["verse"]}"
+    if "ensign" in data.keys():
+        books = f"Ensign, {data["month"]} {data["ensign"]}, {data["article"]}, "
+    if "manual" in data.keys():
+        books = f"{data["manual"]}, "
+    if "book" and "sub_book" in data.keys():
+        books = f"{data["book"]}, {data["sub_book"]} "
+    reference = books + reference_numbers
+
+    return reference
+
+
 def open_database(database):
     pass
 
@@ -161,6 +246,9 @@ def commit_to_database(
 
 
 class SystemMemory:
+    """A convenience class enabling cross-platform memory and storage
+    checking."""
+
     def __init__(self) -> None:
         self._memory_info = psutil.virtual_memory()
         self._current_memory = self._memory_info.available
@@ -344,20 +432,6 @@ def convert_note_identifiers_to_list(note: Dict) -> Dict:
 # Other
 
 
-def build_source_names(url: str):
-    hyperlink_name = r"""
-        https:\/\/www\.churchofjesuschrist\.org\/study\/scriptures\/ # Match
-        # the static part of the url
-        ([a-z]{2,5})\/  # Capture the two or three-letter book identifier
-        ([a-z]+)\/  # Capture the book name
-        (\d+)\/  # Capture the chapter number
-        \?lang=[a-z]{3}&id=p(\d+)  # Match the query parameters and capture
-        # the paragraph number.
-    """
-    names = re.compile(hyperlink_name, re.VERBOSE)
-    return names.findall(url)
-
-
 def write_to_txt(notes, output_path):
     """Write the given notes to a `.txt` file."""
     with open(output_path, "w", encoding="utf-8") as f:
@@ -424,8 +498,23 @@ def write_to_docx(
         # built-in Hyperlink style. Can add_hyperlink() be
         # modified to use add_run() and to add the hyperlink
         # to that?
+
+        # NOTE: Any note created directly in Annotations in the Gospel Library
+        # app or Gospel Library Online will have an "undefined" source
+        # location.
+        if note.source_location == "undefined":
+            reference = "Source: "
+        else:
+            # Build the source references using the source location URL.
+            mapped_names = load_json(DATA_PATH / "data_maps.json")
+            extracted_reference = extract_study_data(
+                note.source_location,
+                mapped_names,
+            )
+            reference = build_study_references(extracted_reference)
+
         p = doc.add_paragraph(style="Link")
-        add_hyperlink(p, note.source_location, "Source: ")
+        add_hyperlink(p, note.source_location, reference)
 
     # Add document properties
     doc.core_properties.author = getpass.getuser()
