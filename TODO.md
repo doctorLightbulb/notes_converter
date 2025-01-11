@@ -5,7 +5,8 @@
 * When two or more scriptural references match exactly, the note's heading should be combined upon conversion, with the dates separating the note's body.
 * Convert plain open and close quotes and apostophies to their respective fancy versions, thus eliminating inconsistencies in the notes.
 * Make the open file and save file dialogs remember the last destinations they visited.
-* Build notes' titles from the source links.
+* Add allowance for paragraph ranges (i.e. =p4-p6).
+* Need full support for General Conference references.
 
 ## Potential Issues
 
