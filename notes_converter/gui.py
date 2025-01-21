@@ -1,11 +1,10 @@
 """A module containing all the GUI elements for `notes_converter`."""
 
 import tkinter as tk
-from pathlib import Path
 from tkinter import messagebox, ttk
 from tkinter.filedialog import askopenfilenames, asksaveasfilename
 
-from utils import ROOT_PATH
+from utils.constants import ROOT_PATH
 
 
 class MainWindow(tk.Tk):
