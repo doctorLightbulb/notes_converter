@@ -150,6 +150,7 @@ def extract_study_data(raw_data, name_maps):
     and return a dict."""
 
     # TODO: Add allowance for paragraph ranges (i.e. =p4-p6).
+    # TODO: Need full support for General Conference references.
 
     def process_scriptures(raw_data):
         """Extract book name, chapter and verse from `raw_data`.
@@ -420,7 +421,8 @@ def convert_note_identifiers_to_list(note: Dict) -> Dict:
 
     Returns
     -------
-    A `dict` object with only its `["tags"]` and `["notebooks"]` values changed.
+    A `dict` object with only its `["tags"]` and `["notebooks"]` values
+    changed.
     """
     tags: List[str] = note["tags"].split("; ")
     note["tags"] = tags
