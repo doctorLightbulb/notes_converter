@@ -1,3 +1,5 @@
+[![Github All Releases](https://img.shields.io/github/downloads/doctorLightbulb/notes_converter/total.svg)]()
+
 # README
 
 Welcome to `notes_converter`, a simple script that converts your exported `.csv` notes from [Gospel Library Online](https://www.churchofjesuschrist.org/study?lang=eng&platform=web) of the Church of Jesus Christ of Latter-day Saints into an orderly Word document.
@@ -13,6 +15,11 @@ Welcome to `notes_converter`, a simple script that converts your exported `.csv`
 * ❌ Permanently stores all notes for future retrieval.
 * ❌ Imports `.txt` files.
 * ❌ Imports handwritten notes.
+
+> ⚠️ **Note**
+>
+> This project is currently under development and available only as source code. In time, however, it will be released in a more user-friendly form.
+
 
 ## Usage examples
 
@@ -30,6 +37,13 @@ Any Word document can be used as a template. For the sake of order, however, I w
 
 What the template contains is purely for your convenience to help in its design. It will not appear in the output file.
 
+Add two paragraph styles with the following names:
+
+* **Head** (used for the first paragraph)
+* **Link** (used for hyperlinks)
+
+Eventually, existing styles in a Word document will be used for increased flexibility.
+
 > **NOTE**
 >
-> Be sure to close the template Word document *before* executing the application. It cannot use the template if it is open in another application.
+> If you are on a Windows machine, be sure to close the template Word document *before* executing the application. It cannot use the template if it is open in another application.
