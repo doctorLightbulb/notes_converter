@@ -21,7 +21,7 @@ class SystemMemory:
 
         Parameters
         ----------
-        - megabytes : An estimated amount of required memory in megabytes.
+        megabytes : An estimated amount of required memory in megabytes.
 
         Returns
         -------
@@ -39,7 +39,7 @@ class SystemMemory:
 
         Parameters
         ----------
-        - megabytes : An estimated amount of required storage
+        megabytes : An estimated amount of required storage
             in megabytes.
 
         Returns

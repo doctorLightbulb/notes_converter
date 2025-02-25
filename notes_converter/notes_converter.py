@@ -12,18 +12,6 @@ from utils.load import load_csv_files, load_json
 from utils.sort import sort_notes_by_title_and_verse
 from utils.write import write_to_docx
 
-# from utils import (
-#     DATA_PATH,
-#     FIELD_NAMES,
-#     SystemMemory,
-#     build_notes,
-#     check_file_size,
-#     load_csv_files,
-#     load_json,
-#     sort_notes_by_title_and_verse,
-#     write_to_docx,
-# )
-
 
 class NotesConverter:
     def __init__(self) -> None:
@@ -69,7 +57,7 @@ class NotesConverter:
 
         Parameters
         ----------
-        - notes_paths : The paths to the files to load.
+        notes_paths : The paths to the files to load.
 
         Returns
         -------
@@ -90,7 +78,7 @@ class NotesConverter:
 
         Parameters
         ----------
-        - notes_paths : The paths to the notes to be loaded.
+        notes_paths : The paths to the notes to be loaded.
 
         Returns
         -------
