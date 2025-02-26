@@ -54,7 +54,7 @@ venv\Scripts\activate
 **Linux**
 
 ```bash
-. venv\bin\activate
+. venv/bin/activate
 ```
 
 Next, install the dependencies:
