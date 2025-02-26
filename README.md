@@ -7,7 +7,7 @@
 [![Clones](https://img.shields.io/badge/clones-unknown-lightgrey?style=flat-square)](https://github.com/doctorLightbulb/notes_converter/graphs/traffic)
 [![Open Issues](https://img.shields.io/github/issues/doctorLightbulb/notes_converter)](https://github.com/doctorLightbulb/notes_converter/issues)
 
-Welcome to `notes_converter`, a simple script that converts your exported `.csv` notes from [Gospel Library Online](https://www.churchofjesuschrist.org/study?lang=eng&platform=web) of the Church of Jesus Christ of Latter-day Saints into an orderly Word document.
+Welcome to `notes_converter`, a simple script that converts your exported `.csv` notes from [Gospel Library Online](https://www.churchofjesuschrist.org/study?lang=eng&platform=web) of the Church of Jesus Christ of Latter-day Saints to an orderly Word document.
 
 ## What it does
 
