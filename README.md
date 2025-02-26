@@ -20,7 +20,6 @@ Welcome to `notes_converter`, a simple script that converts your exported `.csv`
 >
 > This project is currently under development and available only as source code. In time, however, it will be released in a more user-friendly form.
 
-
 ## Usage examples
 
 ### The graphical user interface (GUI)
