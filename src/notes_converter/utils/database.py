@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import List, Sequence, Union
 
-from utils.load import load_csv_as_dict
+from notes_converter.utils.load import load_csv_as_dict
 
 
 def open_database(database):

@@ -3,10 +3,9 @@
 Convert a `.csv` file to a styled `.docx` file.
 """
 
-from cli import Cli, parse_args
-from gui import MainWindow
-
-from notes_converter import NotesConverter
+from notes_converter.cli import Cli, parse_args
+from notes_converter.converter import NotesConverter
+from notes_converter.gui import MainWindow
 
 
 def main():

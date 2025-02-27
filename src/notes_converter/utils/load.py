@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import List, Sequence, Union
 
-from utils.decorators import remove_duplicates
+from notes_converter.utils.decorators import remove_duplicates
 
 
 def load_json(path):

@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import askopenfilenames, asksaveasfilename
 
-from utils.constants import ROOT_PATH
+from notes_converter.utils.constants import ROOT_PATH
 
 
 class MainWindow(tk.Tk):

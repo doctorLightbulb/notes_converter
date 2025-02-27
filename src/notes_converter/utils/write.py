@@ -11,10 +11,11 @@ from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.opc.exceptions import PackageNotFoundError
 from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
-from utils.constants import DATA_PATH, TEMPLATE_PATH
-from utils.convert import build_study_references, extract_study_data
-from utils.exceptions import NoAvailableTemplate
-from utils.load import load_json
+
+from notes_converter.utils.constants import DATA_PATH, TEMPLATE_PATH
+from notes_converter.utils.convert import build_study_references, extract_study_data
+from notes_converter.utils.exceptions import NoAvailableTemplate
+from notes_converter.utils.load import load_json
 
 
 def write_to_txt(notes, output_path):

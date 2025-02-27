@@ -1,19 +1,21 @@
-"""A module containing everything to do with the notes_converter
+"""A module containing everything to do with the `notes_converter`
 engine.
 """
 
 from pathlib import Path
 from typing import Any, List
 
-from utils.check import SystemMemory, check_file_size
-from utils.constants import DATA_PATH, FIELD_NAMES
-from utils.convert import build_notes
-from utils.load import load_csv_files, load_json
-from utils.sort import sort_notes_by_title_and_verse
-from utils.write import write_to_docx
+from notes_converter.utils.check import SystemMemory, check_file_size
+from notes_converter.utils.constants import DATA_PATH, FIELD_NAMES
+from notes_converter.utils.convert import build_notes
+from notes_converter.utils.load import load_csv_files, load_json
+from notes_converter.utils.sort import sort_notes_by_title_and_verse
+from notes_converter.utils.write import write_to_docx
 
 
 class NotesConverter:
+    """A class for converting a `csv` file to an MS Word document."""
+
     def __init__(self) -> None:
         self.input_path: List[Any] = []
         self.output_path = Path()

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=75.3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "notes_converter"
+dependencies = ["psutil>=6.1.1", "python-docx>=1.1.2"]
+authors = [{ name = "Joshua Nolan", email = "joshua@joshuanolan.com" }]
+keywords = ["note", "Gospel Library Online", "converter"]
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/doctorLightbulb/notes_converter.git"
+Issues = "https://github.com/doctorLightbulb/notes_converter/issues"
+
+[project.scripts]
+converter = "notes_converter.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "notes_converter.__version__" }
