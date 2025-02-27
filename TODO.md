@@ -7,6 +7,7 @@
 * Make the open file and save file dialogs remember the last destinations they visited.
 * Add allowance for paragraph ranges (i.e. =p4-p6).
 * Need full support for General Conference references.
+* Add headers to separate notes by Old Testament, New Testament, Book of Mormon, etc.
 
 ## Potential Issues
 
