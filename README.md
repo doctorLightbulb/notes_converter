@@ -93,7 +93,7 @@ After placing your copy of the repository in a folder, open the folder in a term
 python -m venv venv --prompt="notes"
 ```
 
-Activate the virtual environment. Which command you use will depend on your operating system.
+Activate the virtual environment (which command you use will depend on your operating system):
 
 **Windows:**
 
