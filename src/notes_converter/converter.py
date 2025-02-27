@@ -5,12 +5,12 @@ engine.
 from pathlib import Path
 from typing import Any, List
 
-from notes_converter.utils.check import SystemMemory, check_file_size
+from notes_converter.utils.checkers import SystemMemory, check_file_size
 from notes_converter.utils.constants import DATA_PATH, FIELD_NAMES
 from notes_converter.utils.convert import build_notes
-from notes_converter.utils.load import load_csv_files, load_json
-from notes_converter.utils.sort import sort_notes_by_title_and_verse
-from notes_converter.utils.write import write_to_docx
+from notes_converter.utils.loaders import load_csv_files, load_json
+from notes_converter.utils.sorters import sort_notes_by_title_and_verse
+from notes_converter.utils.writers import write_to_docx
 
 
 class NotesConverter:
