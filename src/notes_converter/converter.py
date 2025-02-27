@@ -1,5 +1,4 @@
-"""A module containing everything to do with the `notes_converter`
-engine.
+"""A module containing the `NotesConverter` engine.
 """
 
 from pathlib import Path
@@ -7,7 +6,7 @@ from typing import Any, List
 
 from notes_converter.utils.checkers import SystemMemory, check_file_size
 from notes_converter.utils.constants import DATA_PATH, FIELD_NAMES
-from notes_converter.utils.convert import build_notes
+from notes_converter.utils.converters import build_notes
 from notes_converter.utils.loaders import load_csv_files, load_json
 from notes_converter.utils.sorters import sort_notes_by_title_and_verse
 from notes_converter.utils.writers import write_to_docx

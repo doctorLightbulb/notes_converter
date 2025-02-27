@@ -26,21 +26,21 @@ def build_notes(
 
     notes = []
     for n in notes_list:
-        n = process_note(n)
+        n = _process_note(n)
         values = [value if value else "" for value in n.values()]
         note = Note(*values)
         notes.append(note)
     return notes
 
 
-def process_note(note):
+def _process_note(note):
     """Convert a note's `note_text`, `tags` and `notebooks` to lists,
     and remove the date and ruler, and update the `TAGS` and `NOTEBOOKS`
     constants.
     """
-    n = convert_note_text_to_list(note)
-    _n = convert_note_identifiers_to_list(n)
-    cleaned_n = remove_headers(_n)
+    n = _convert_note_text_to_list(note)
+    _n = _convert_note_identifiers_to_list(n)
+    cleaned_n = _remove_headers(_n)
 
     add_tags(TAGS, cleaned_n["tags"])
     add_tags(NOTEBOOKS, cleaned_n["notebooks"])
@@ -55,22 +55,22 @@ def add_tags(tags_set, new_tags) -> None:
     tags_set.update(new_tags)
 
 
-def strip_artifacts(line: str) -> Union[str, None]:
+def _strip_artifacts(line: str) -> Union[str, None]:
     """Strip unwanted parts of a list."""
     if line.startswith("[") or line.startswith("-----"):
         return ""
     return line
 
 
-def remove_headers(note):
+def _remove_headers(note):
     """Remove unwanted text at the head of a list."""
-    n = [strip_artifacts(_) for _ in note["note_text"]]
+    n = [_strip_artifacts(_) for _ in note["note_text"]]
     cleaned_n = [_ for _ in n if _.strip()]  # Remove empty values
     note["note_text"] = cleaned_n
     return note
 
 
-def convert_note_text_to_list(note):
+def _convert_note_text_to_list(note):
     """Convert `note`'s `note_text` value to a list using `re.findall()`.
 
     Parameters
@@ -88,7 +88,7 @@ def convert_note_text_to_list(note):
     return note
 
 
-def convert_note_identifiers_to_list(note: Dict) -> Dict:
+def _convert_note_identifiers_to_list(note: Dict) -> Dict:
     """Convert a note's `["tags"]` and `["notebooks"]` values to lists.
 
     Parameters

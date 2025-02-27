@@ -13,7 +13,7 @@ from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
 
 from notes_converter.utils.constants import DATA_PATH, TEMPLATE_PATH
-from notes_converter.utils.convert import build_study_references, extract_study_data
+from notes_converter.utils.converters import build_study_references, extract_study_data
 from notes_converter.utils.exceptions import NoAvailableTemplate
 from notes_converter.utils.loaders import load_json
 
@@ -23,7 +23,7 @@ def write_to_txt(notes, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
         for note in notes:
             f.write("\n\n" + note.title + "\n")
-            f.write(convert_datetime(note.created) + "\n\n")
+            f.write(_convert_datetime(note.created) + "\n\n")
             for body in note.note_text:
                 f.write(body + " ")
             f.write("\n" + note.source_location)
@@ -72,7 +72,7 @@ def write_to_docx(
 
     for note in notes:
         doc.add_heading(note.title, level=1)
-        doc.add_paragraph(convert_datetime(note.created), style="Date")
+        doc.add_paragraph(_convert_datetime(note.created), style="Date")
 
         for value, body in enumerate(note.note_text):
             if value == 0:  # Allow for no text indent on first paragraph.
@@ -89,7 +89,7 @@ def write_to_docx(
         # app or Gospel Library Online will have an "undefined" source
         # location.
         if note.source_location == "undefined":
-            reference = "Source: "
+            reference = "Source"
         else:
             # Build the source references using the source location URL.
             mapped_names = load_json(DATA_PATH / "data_maps.json")
@@ -100,7 +100,7 @@ def write_to_docx(
             reference = build_study_references(extracted_reference)
 
         p = doc.add_paragraph(style="Link")
-        add_hyperlink(p, note.source_location, reference)
+        _add_hyperlink(p, note.source_location, reference)
 
     # Add document properties
     doc.core_properties.author = getpass.getuser()
@@ -112,7 +112,7 @@ def write_to_docx(
 # write_to_docx() helper functions
 
 
-def convert_datetime(note_time: str) -> str:
+def _convert_datetime(note_time: str) -> str:
     """Convert the time to a human-readable format."""
     default_time = datetime.fromisoformat(note_time.replace("Z", "+00:00"))
     dt = default_time.replace(tzinfo=pytz.utc)
@@ -121,7 +121,7 @@ def convert_datetime(note_time: str) -> str:
     return dt_pacific.strftime("%B %d, %Y, %I:%M %p %Z")
 
 
-def add_hyperlink(paragraph, url, text, color="#0000EE", underline=None):
+def _add_hyperlink(paragraph, url, text, color="#0000EE", underline=None):
     """Place a hyperlink within a `paragraph` object.
 
     Parameters
