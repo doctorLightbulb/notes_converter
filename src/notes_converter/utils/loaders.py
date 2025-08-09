@@ -5,9 +5,6 @@ functions.
 import csv
 import json
 from pathlib import Path
-from typing import List, Sequence, Union
-
-from notes_converter.utils.decorators import remove_duplicates
 
 
 def load_json(path):
