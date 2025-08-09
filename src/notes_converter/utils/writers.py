@@ -18,15 +18,15 @@ from notes_converter.utils.exceptions import NoAvailableTemplate
 from notes_converter.utils.loaders import load_json
 
 
-def write_to_txt(notes, output_path):
-    """Write the given notes to a `.txt` file."""
-    with open(output_path, "w", encoding="utf-8") as f:
+def write_to_txt(notes, output_path, mode="w"):
+    """Write the given notes to a `.txt` file with basic formatting."""
+    with open(output_path, mode, encoding="utf-8") as f:
         for note in notes:
             f.write("\n\n" + note.title + "\n")
             f.write(_convert_datetime(note.created) + "\n\n")
             for body in note.note_text:
-                f.write(body + " ")
-            f.write("\n" + note.source_location)
+                f.write(body)
+            f.write("\n" + note.reference)
 
 
 def write_to_docx(
