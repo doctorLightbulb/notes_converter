@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 
-def load_json(path):
+def load_json(path: Path | str):
     """Load a `.json` file in `utf-8` encoding.
 
     Parameters
@@ -22,7 +22,7 @@ def load_json(path):
         return json.load(f)
 
 
-def load_csv(path: Path):
+def load_csv(path: Path | str):
     """Load a `csv` file in `utf-8` encoding, skip the header line
     and return a generator object.
 
