@@ -2,11 +2,11 @@ import re
 from typing import List, Tuple
 
 # Regular expressions:
-books_pattern = re.compile(
+book_pattern = re.compile(
     r"churchofjesuschrist.org/study/scriptures/(.*)/(.*).*/(\d+)\?"
 )
 chapter_pattern = re.compile(r".*/(\d+)\?")
-verses_pattern = re.compile(r"=p(\d+)")
+verse_pattern = re.compile(r"=p(\d+)")
 
 ruler_pattern = re.compile(r"\s\s(-){2,}\s\s")
 
@@ -45,9 +45,9 @@ class Note:
         """Create the scriptural reference of the form:
         Mormon 4:10
         """
-        book = get_book_name(books_pattern, self.source_location, self.mapping)
+        book = get_book_name(book_pattern, self.source_location, self.mapping)
         chapter = get_chapter_number(chapter_pattern, self.source_location)
-        verse = get_verse_numbers(verses_pattern, self.source_location)
+        verse = get_verse_numbers(verse_pattern, self.source_location)
         self.reference = f"{book} {chapter}:{verse}"
         self.chapter = chapter
         self.verse = verse

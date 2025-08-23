@@ -51,8 +51,7 @@ class NotesConverter:
         with sqlite3.connect(database_path) as connection:
 
             # Database initialization.
-            cursor = connection.cursor()
-            cursor.execute(CREATE_TABLE_QUERY)
+            connection.execute(CREATE_TABLE_QUERY)
 
             # Process all given input files (either 1 or more).
             for path in self.input_path:
@@ -71,7 +70,7 @@ class NotesConverter:
                     # Save the notes to the database in segments
                     # to minimize memory consumption.
                     if len(notes_segment) == 99:
-                        save_to_database(cursor, notes_segment)
+                        save_to_database(connection, notes_segment)
                         notes_segment.clear()
 
             # Retrieve notes by book, sorted by chapter and verse.
@@ -80,7 +79,7 @@ class NotesConverter:
             for record in book_names.keys():
                 writer.write_heading(record)
                 for book in book_names[record]:
-                    retrieved_notes = cursor.execute(
+                    retrieved_notes = connection.execute(
                         FETCH_NOTES.format(book)
                     ).fetchall()
 
@@ -92,6 +91,7 @@ class NotesConverter:
                     writer.write_notes(book_notes)
 
         # TODO: Add support for splitting the notes on tag or notebook.
+        connection.close()
 
         return "".join(self.show_saved_status())
 
