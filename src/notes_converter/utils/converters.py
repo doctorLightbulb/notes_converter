@@ -70,7 +70,7 @@ def _remove_headers(note):
     return note
 
 
-def _convert_note_text_to_list(note):
+def _convert_note_text_to_list(note_text):
     """Convert `note`'s `note_text` value to a list using `re.findall()`.
 
     Parameters
@@ -82,10 +82,10 @@ def _convert_note_text_to_list(note):
     A `dict` object with only its `["note_text"]` value changed.
     """
     paragraphs = re.compile(r"([^\n]+(?:\n(?!\n)[^\n]+)*)")
-    p = paragraphs.findall(note["note_text"])
+    p = paragraphs.findall(note_text)
     text = [i.replace("\n", " ") for i in p]
-    note["note_text"] = text
-    return note
+    note_text = text
+    return note_text
 
 
 def _convert_note_identifiers_to_list(note: Dict) -> Dict:
