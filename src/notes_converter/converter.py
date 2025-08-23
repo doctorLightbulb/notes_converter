@@ -1,15 +1,19 @@
-"""A module containing the `NotesConverter` engine.
-"""
+"""A module containing the `NotesConverter` engine."""
 
+import sqlite3
 from pathlib import Path
 from typing import Any, List
 
-from notes_converter.utils.checkers import SystemMemory, check_file_size
-from notes_converter.utils.constants import DATA_PATH, FIELD_NAMES
-from notes_converter.utils.converters import build_notes
-from notes_converter.utils.loaders import load_csv_files, load_json
-from notes_converter.utils.sorters import sort_notes_by_title_and_verse
-from notes_converter.utils.writers import write_to_docx
+from notes_converter.utils.checkers import SystemMemory, check_required_memory
+from notes_converter.utils.constants import DATA_PATH
+from notes_converter.utils.database import (
+    CREATE_TABLE_QUERY,
+    FETCH_NOTES,
+    save_to_database,
+)
+from notes_converter.utils.loaders import load_csv, load_json
+from notes_converter.utils.structures import Note, create_notes
+from notes_converter.utils.writers import DocxWriter, write_to_txt
 
 
 class NotesConverter:
@@ -22,70 +26,74 @@ class NotesConverter:
         self._smu = SystemMemory()
 
     def convert(self):
-        """Convert the specified files using either
-        `self.convert_with_full_memory` or `self.convert_with_limited_memory`.
+        """Convert the specified files. The conversion process used depends on
+        whether the system has enough memory for the conversion. If it does, a
+        virtual SQLite3 database is used. If not, a regular SQLite3 database is
+        used.
         """
         self.output_path = Path(self.output_path)
+        enough_memory = check_required_memory(self.input_path, self._smu)
 
-        # Estimated memory needed to run the program
-        overhead_memory = 10  # in megabytes
-
-        # Estimated memory needed to convert the input file(s)
-        conversion_memory = check_file_size(self.input_path)  # in megabytes
-        total_memory_needed = overhead_memory + conversion_memory
-
-        enough_memory = self._smu.check_memory(megabytes=total_memory_needed)
         if enough_memory:
-            sorted_notes = self.convert_with_full_memory(self.input_path)
+            database_path = ":memory:"
         else:
-            sorted_notes = self.convert_with_limited_memory(self.input_path)
-            # TODO: Pass the data from one generator to another. The second
-            # generator must convert each note into a namedtuple object in
-            # order to be used by write_to_docx()
-            return  # Remove for production
+            database_path = "some/path"
 
-        write_to_docx(
-            notes=sorted_notes,
-            output_path=self.output_path,
-            template_path=self.template_path,
-        )
+        # Process notes and load database
+        mapped_names = load_json(DATA_PATH / "data_maps.json")
+        book_names = load_json(DATA_PATH / "standard_works.json")
 
-        return "".join(self.show_saved_status())
+        # Word document writer
+        writer = DocxWriter(self.output_path, self.template_path)
 
-    def convert_with_full_memory(self, notes_paths):
-        """Convert the notes by loading them all into memory
-        before writing them to a `.docx` file.
+        # Due to the temporary database functionality, all database
+        # execution must be done without closing the connection.
+        with sqlite3.connect(database_path) as connection:
 
-        Parameters
-        ----------
-        notes_paths : The paths to the files to load.
+            # Database initialization.
+            cursor = connection.cursor()
+            cursor.execute(CREATE_TABLE_QUERY)
 
-        Returns
-        -------
-        A list of notes built using a `namedtuple` object.
-        """
+            # Process all given input files (either 1 or more).
+            for path in self.input_path:
+                raw_notes = load_csv(path)
 
-        merged_notes = load_csv_files(notes_paths, FIELD_NAMES)
-        notes = build_notes(merged_notes, FIELD_NAMES)
+                # Process the notes of a given file.
+                notes_segment = []
+                for _ in raw_notes:
+                    note = Note(*_)
+                    note.mapping = mapped_names
+                    note.clean_note_text()
+                    note.create_reference()
+
+                    notes_segment.append(note)
+
+                    # Save the notes to the database in segments
+                    # to minimize memory consumption.
+                    if len(notes_segment) == 99:
+                        save_to_database(cursor, notes_segment)
+                        notes_segment.clear()
+
+            # Retrieve notes by book, sorted by chapter and verse.
+            # The book can also be a General Conference address or
+            # any other Church manual or book.
+            for record in book_names.keys():
+                writer.write_heading(record)
+                for book in book_names[record]:
+                    retrieved_notes = cursor.execute(
+                        FETCH_NOTES.format(book)
+                    ).fetchall()
+
+                    # If there are no notes for a given book, skip to the next book.
+                    if not retrieved_notes:
+                        continue
+
+                    book_notes = create_notes(retrieved_notes)
+                    writer.write_notes(book_notes)
 
         # TODO: Add support for splitting the notes on tag or notebook.
 
-        title_order = load_json(DATA_PATH / "standard_works_order.json")
-        sorted_notes = sort_notes_by_title_and_verse(notes, title_order)
-        return sorted_notes
-
-    def convert_with_limited_memory(self, notes_paths):
-        """Convert and sort all notes using a `SQLite3` database.
-
-        Parameters
-        ----------
-        notes_paths : The paths to the notes to be loaded.
-
-        Returns
-        -------
-        A generator object connected directly to the database.
-        """
-        print("Low system memory.")
+        return "".join(self.show_saved_status())
 
     def show_saved_status(self):
         return (
