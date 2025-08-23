@@ -56,3 +56,14 @@ def check_file_size(paths):
     """Tally the size of all provided files, in bytes, and
     return the sum in megabytes."""
     return sum([Path(path).stat().st_size / (1024 * 1024) for path in paths])
+
+
+def check_required_memory(file_path, smu: SystemMemory, overhead: float = 10):
+    # Estimated memory needed to run the program
+    overhead_memory = overhead  # in megabytes
+
+    # Estimated memory needed to convert the input file(s)
+    conversion_memory = check_file_size(file_path)  # in megabytes
+    total_memory_needed = overhead_memory + conversion_memory
+
+    return smu.check_memory(megabytes=total_memory_needed)
