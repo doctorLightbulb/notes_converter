@@ -40,7 +40,7 @@ class NotesConverter:
             database_path = "some/path"
 
         # Process notes and load database
-        mapped_names = load_json(DATA_PATH / "data_maps.json")
+        mapped_names = load_json(DATA_PATH / "book_codes.json")
         book_names = load_json(DATA_PATH / "standard_works.json")
 
         # Word document writer
