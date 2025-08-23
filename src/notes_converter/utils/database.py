@@ -18,7 +18,8 @@ CREATE_TABLE_QUERY = """
         created,
         reference,
         chapter,
-        verse
+        verse,
+        UNIQUE(created)
     )
 """
 
@@ -44,7 +45,7 @@ FETCH_NOTES = """
         chapter,
         verse 
     FROM notes
-    WHERE reference LIKE "%{}%"
+    WHERE reference LIKE "{}%"
     ORDER BY COALESCE(chapter, verse, created)
 """
 
@@ -110,7 +111,8 @@ class Database:
             return results.fetchall()
 
 
-def save_to_database(cursor, notes):
+def save_to_database(connection, notes):
     """Save the current batch of notes to a temporary database."""
     listed_notes = [i.values() for i in notes]
-    cursor.executemany(COMMIT_NOTE_QUERY, listed_notes)
+    connection.executemany(COMMIT_NOTE_QUERY, listed_notes)
+    connection.commit()
