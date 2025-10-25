@@ -29,7 +29,39 @@ ruler_pattern = re.compile(r"\s\s(-){2,}\s\s")
 
 
 class Note:
-    """A massive class that handles data storage and cleaning."""
+    """
+    Represents a single note.
+
+    Attributes
+    ----------
+    _type : str
+        The kind of note (usually "highlight").
+    title : str
+        The title of the note.
+    note_text : str
+        The actual text of the note.
+    source_location : str
+        A URL to the note's source at Gospel Library Online.
+    tags : str
+        A tag category of the form `tag 1;tag 2`. (Used for grouping.)
+    notebooks : str
+        The notebook(s) to which the note belongs. (Used for grouping.)
+    study_set : str
+        The study set to which the note belongs. (Used for grouping.)
+    last_updated : str
+        The date when the note was last edited.
+    created : str
+        The date when the note was first created.
+
+    Methods
+    -------
+    create_reference():
+        Creates a scriptural reference of the form Mormon: 4:10.
+    clean_note_text():
+        Cleans the body of the note by removing artifacts.
+    values():
+        Returns all attribute values as a list.
+    """
 
     def __init__(
         self,
@@ -43,33 +75,6 @@ class Note:
         last_updated: str,
         created: str,
     ) -> None:
-        """
-        Parameters
-        ----------
-        _type : str
-            The kind of note (usually "highlight").
-        title : str
-            The title of the note.
-        note_text : str
-            The actual text of the note.
-        source_location : str
-            A URL to the note's source at Gospel Library Online.
-        tags : str
-            A tag category of the form `tag 1;tag 2`. (Used for grouping.)
-        notebooks : str
-            The notebook(s) to which the note belongs. (Used for grouping.)
-        study_set : str
-            The study set to which the note belongs. (Used for grouping.)
-        last_updated : str
-            The date when the note was last edited.
-        created : str
-            The date when the note was first created.
-
-        Returns
-        -------
-        None : None
-            Values are stored, not returned.
-        """
         self.type_ = type_
         self.title = title
         self.note_text = note_text
@@ -215,7 +220,36 @@ def get_verse_numbers(pattern: re.Pattern, url: str) -> int | str:
 
 
 class Entry:
-    """A simple data class for storing one note."""
+    """
+    Represents a single note.
+
+    Attributes
+    ----------
+    _type : str
+        The kind of note (usually "highlight").
+    title : str
+        The title of the note.
+    note_text : str
+        The actual text of the note.
+    source_location : str
+        A URL to the note's source at Gospel Library Online.
+    tags : str
+        A tag category of the form `tag 1;tag 2`. (Used for grouping.)
+    notebooks : str
+        The notebook(s) to which the note belongs. (Used for grouping.)
+    study_set : str
+        The study set to which the note belongs. (Used for grouping.)
+    last_updated : str
+        The date when the note was last edited.
+    created : str
+        The date when the note was first created.
+    reference : str
+        The scriptural reference of the form: Mormon 4:10.
+    chapter : int
+        The chapter number.
+    verse : int
+        The verse number.
+    """
 
     __slots__ = (
         "type_",
@@ -262,5 +296,5 @@ class Entry:
 
 
 def create_notes(notes: List[Tuple]) -> List[Entry]:
-    """Add all notes to an `Entry` class and return them in a list."""
+    """Add each note to an `Entry` class and return the entries in a list."""
     return [Entry(*i) for i in notes]
