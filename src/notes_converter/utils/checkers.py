@@ -3,6 +3,7 @@ inspection.
 """
 
 from pathlib import Path
+from typing import List
 
 import psutil
 
@@ -16,16 +17,18 @@ class SystemMemory:
         self._current_memory = self._memory_info.available
         self._current_storage = self._memory_info.total
 
-    def check_memory(self, megabytes) -> bool:
+    def check_memory(self, megabytes: float) -> bool:
         """Check the available system memory (RAM) against `megabytes`.
 
         Parameters
         ----------
-        megabytes : An estimated amount of required memory in megabytes.
+        megabytes : float
+            An estimated amount of required memory in megabytes.
 
         Returns
         -------
-        A boolean value: `True` or `False`.
+        bool
+            Either `True` or `False`.
         """
         # Convert to megabytes:
         needed_memory = megabytes
@@ -34,17 +37,18 @@ class SystemMemory:
         return True if needed_memory < current_memory else False
 
     def check_storage(self, megabytes) -> bool:
-        """Check the available system storage (disk space) against
-        `megabytes`.
+        """
+        Check the available system storage (disk space) against `megabytes`.
 
         Parameters
         ----------
-        megabytes : An estimated amount of required storage
-            in megabytes.
+        megabytes : int
+            An estimated amount of required storage in megabytes.
 
         Returns
         -------
-        A boolean value: `True` or `False`.
+        bool
+            Either `True` or `False`.
         """
         # Convert to megabytes:
         needed_storage = megabytes
@@ -52,9 +56,8 @@ class SystemMemory:
         return True if needed_storage < current_storage else False
 
 
-def check_file_size(paths):
-    """Tally the size of all provided files, in bytes, and
-    return the sum in megabytes."""
+def check_file_size(paths: List[str]):
+    """Tally file sizes in bytes and return the sum in megabytes."""
     return sum([Path(path).stat().st_size / (1024 * 1024) for path in paths])
 
 

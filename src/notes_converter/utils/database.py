@@ -1,4 +1,4 @@
-"""A module containing the Database class and related query constants."""
+"""Contains the Database class and related query constants."""
 
 import sqlite3
 from pathlib import Path

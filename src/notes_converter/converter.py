@@ -17,22 +17,44 @@ from notes_converter.utils.writers import DocxWriter, write_to_txt
 
 
 class NotesConverter:
-    """A class for converting a `csv` file to an MS Word document."""
+    """
+    Converts a `csv` file to an MS Word document.
+
+    Attributes
+    ----------
+    input_paths : List[Any]
+        Paths to the files to convert.
+    output_path : Path
+        The directory in which to save the converted document.
+    template_path : None
+        The path to a custom MS Word template to use. Default is `None`.
+    _smu : SystemMemory
+        The SystemMemory class for memory and storage inspection.
+
+    Methods
+    -------
+    convert():
+        Converts the given `csv` file(s) to a tidy MS Word document.
+    show_saved_status():
+        Returns a message that the file was saved successfully.
+    """
 
     def __init__(self) -> None:
-        self.input_path: List[Any] = []
+        self.input_paths: List[Any] = []
         self.output_path = Path()
         self.template_path = None
         self._smu = SystemMemory()
 
     def convert(self):
-        """Convert the specified files. The conversion process used depends on
-        whether the system has enough memory for the conversion. If it does, a
-        virtual SQLite3 database is used. If not, a regular SQLite3 database is
-        used.
+        """
+        Convert the specified files.
+
+        The conversion process used depends on whether the system has enough
+        memory for the conversion. If it does, a virtual SQLite3 database is
+        used. If not, a regular SQLite3 database is used.
         """
         self.output_path = Path(self.output_path)
-        enough_memory = check_required_memory(self.input_path, self._smu)
+        enough_memory = check_required_memory(self.input_paths, self._smu)
 
         if enough_memory:
             database_path = ":memory:"
@@ -54,7 +76,7 @@ class NotesConverter:
             connection.execute(CREATE_TABLE_QUERY)
 
             # Process all given input files (either 1 or more).
-            for path in self.input_path:
+            for path in self.input_paths:
                 raw_notes = load_csv(path)
 
                 # Process the notes of a given file.

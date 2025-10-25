@@ -1,7 +1,20 @@
-"""A module containing all CLI elements and functions for `notes_converter`."""
+"""
+A module containing all CLI elements and functions for `notes_converter`.
+
+Classes
+-------
+Cli
+
+Functions
+---------
+parse_args()
+"""
 
 import argparse
 from pathlib import Path
+
+# TODO:
+# Transition from argsparse to click.
 
 
 def parse_args():
@@ -33,14 +46,24 @@ def parse_args():
 
 
 class Cli:
-    """Initialize a simple command-line interface for program
-    execution."""
+    """
+    A simple command-line interface for program execution.
+
+    Parameters
+    ----------
+    None
+
+    Methods
+    -------
+    run : Convert with the provided arguments.
+    """
 
     def __init__(self, args, converter) -> None:
         self.args = args
         self.converter = converter
 
     def run(self):
+        """Read all inputs and assign them to `self.converter`."""
         input_path = [Path(i) for i in self.args.input]
         output_path = Path(self.args.output)
 

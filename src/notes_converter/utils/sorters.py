@@ -4,18 +4,21 @@ import re
 
 
 def sort_notes_by_title_and_verse(notes, title_order):
-    """Sort notes by title and verse.
+    """
+    Sort notes by title and verse.
 
     Parameters
     ----------
-    notes : A list of Note objects with `.title`, `.date` and `.body`
-        attributes.
+    notes : List[Note]
+        A list of Note objects with `.title`, `.date` and `.body` attributes.
 
-    title_order : A list of strings in the desired order for the output notes.
+    title_order : List[str]
+        A list of strings in the desired order for the output notes.
 
     Returns
     -------
-    A list of `Note` objects sorted by title and verse.
+    List[Note]
+        A list of `Note` objects sorted by title and verse.
     """
     indexed_titles = {title: index for index, title in enumerate(title_order)}
     chapter_verse_pattern = re.compile(r"\W(\d+|\d+:\d+)|;|:.*")
