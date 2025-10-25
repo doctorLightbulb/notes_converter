@@ -1,5 +1,23 @@
+"""
+A module containing data structure classes for cleaning and storing the notes
+along with helper functions.
+
+Classes
+-------
+- Note
+- Entry
+
+Functions
+---------
+- get_book_name()
+- get_chapter_number()
+- get_verse_numbers()
+- create_notes()
+
+"""
+
 import re
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 # Regular expressions:
 book_pattern = re.compile(
@@ -26,6 +44,23 @@ class Note:
         last_updated: str,
         created: str,
     ) -> None:
+        """
+        Parameters
+        ----------
+        _type (str) : The kind of note (usually "highlight").
+        title (str) : The title of the note.
+        note_text (str) : The actual text of the note.
+        source_location (str) : A URL to the note's source at Gospel Library Online.
+        tags (str) : A tag category of the form `tag 1;tag 2`. (Used for grouping.)
+        notebooks (str) : The notebook(s) to which the note belongs. (Used for grouping.)
+        study_set (str) : The study set to which the note belongs. (Used for grouping.)
+        last_updated (str) : The date when the note was last edited.
+        created (str) : The date when the note was first created.
+
+        Returns
+        -------
+        None
+        """
         self.type_ = type_
         self.title = title
         self.note_text = note_text
@@ -39,12 +74,10 @@ class Note:
         self.chapter = None  # Needed for sorting.
         self.verse = None  # Needed for sorting.
 
-        self.mapping = None
+        self.mapping: Dict[str, str] = dict()
 
     def create_reference(self):
-        """Create the scriptural reference of the form:
-        Mormon 4:10
-        """
+        """Create the scriptural reference of the form: Mormon 4:10."""
         book = get_book_name(book_pattern, self.source_location, self.mapping)
         chapter = get_chapter_number(chapter_pattern, self.source_location)
         verse = get_verse_numbers(verse_pattern, self.source_location)
@@ -53,9 +86,12 @@ class Note:
         self.verse = verse
 
     def clean_note_text(self):
-        """Clean the `note_text` by removing newline characters, replacing simple
-        hyphens and quotation marks with fancy versions and rendering ugly
-        bracketed dates into prettier, long-hand versions.
+        """
+        Clean the `note_text` by removing  unwanted artifacts.
+
+        Removes newline characters and replaces simple hyphens and quotation
+        marks with fancy versions and render ugly bracketed dates into prettier,
+        long-hand versions.
         """
         text = self.note_text.replace("\n", " ")  # Combine split lines.
         paragraphs = text.replace("   ", "\n")  # Redefine paragaphs.
@@ -63,7 +99,7 @@ class Note:
         self.note_text = unruled
 
     def values(self):
-        """Return a list of all values."""
+        """Return a list of all note values."""
         return [
             self.type_,
             self.title,
@@ -91,20 +127,22 @@ class Note:
 # HELPER FUNCTIONS FOR CLASS NOTE
 
 
-def get_book_name(pattern, url, mappings) -> str:
-    """Search for a book name with the given `pattern`. If one is found,
-    convert it using the dictionary key-value pairs in `mappings`. If
-    none is found, return `url` unmodified.
+def get_book_name(pattern: re.Pattern, url: str, mappings: Dict[str, str]) -> str:
+    """
+    Search for a book name with the given `pattern`.
+
+    If one is found, convert it using the dictionary key-value pairs in
+    `mappings`. If none is found, return `url` unmodified.
 
     Parameters
     ----------
-    pattern : A regular expression pattern for searching.
-    url : A scripture reference URL from Gospel Library Online.
-    mappings : A dictionary mapping url book names to their scriptural equivalents.
+    pattern (re.Pattern) : A regular expression pattern for searching.
+    url (str) : A scriptural reference URL from Gospel Library Online.
+    mappings (Dict[str, str]) : A dictionary mapping url book names to their scriptural equivalents.
 
     Returns
     -------
-    Either the book name or the URL as a string.
+    Str : Either the book name or the URL as a string.
     """
     record = re.search(pattern, url)
     if record is None:
@@ -113,19 +151,21 @@ def get_book_name(pattern, url, mappings) -> str:
     return record_mapped
 
 
-def get_chapter_number(pattern, url: str) -> int | str:
-    """Search for a chapter number with the given `pattern`. If one is found,
-    convert it to an integer and return it. If none is found, return `url`
-    unmodified.
+def get_chapter_number(pattern: re.Pattern, url: str) -> int | str:
+    """
+    Search for a chapter number with the given `pattern`.
+
+    If one is found, convert it to an integer and return it. If none is
+    found, return `url` unmodified.
 
     Parameters
     ----------
-    pattern : A regular expression pattern for searching.
-    url : A scripture reference URL from Gospel Library Online.
+    pattern (re.Pattern) : A regular expression pattern for searching.
+    url (str) : A scriptural reference URL from Gospel Library Online.
 
     Returns
     -------
-    Either the chapter number as an integer or the URL as a string.
+    Str | int : Either the chapter number as an integer or the URL as a string.
     """
     chapter = re.search(pattern, url)
     if chapter is None:
@@ -133,19 +173,21 @@ def get_chapter_number(pattern, url: str) -> int | str:
     return int(chapter.group(1))
 
 
-def get_verse_numbers(pattern, url) -> int | str:
-    """Search for a verse number with the given `pattern`. If one is found,
-    convert it to an integer and return it. If none is found, return `url`
-    unmodified.
+def get_verse_numbers(pattern: re.Pattern, url: str) -> int | str:
+    """
+    Search for a verse number with the given `pattern`.
+
+    If one is found, convert it to an integer and return it. If none is found,
+    return `url` unmodified.
 
     Parameters
     ----------
-    pattern : A regular expression pattern for searching.
-    url : A scripture reference URL from Gospel Library Online.
+    pattern (re.Pattern) : A regular expression pattern for searching.
+    url (str) : A scriptural reference URL from Gospel Library Online.
 
     Returns
     -------
-    Either the verse number as an integer or the URL as a string.
+    Str | int : Either the verse number as an integer or the URL as a string.
     """
     verse = re.search(pattern, url)
     if verse is None:
@@ -154,7 +196,7 @@ def get_verse_numbers(pattern, url) -> int | str:
 
 
 class Entry:
-    """A simple data storage class that does nothing else."""
+    """A simple data class for storing one note."""
 
     __slots__ = (
         "type_",
@@ -200,6 +242,6 @@ class Entry:
         self.verse = verse
 
 
-def create_notes(notes: List[Tuple]):
+def create_notes(notes: List[Tuple]) -> List[Entry]:
     """Add all notes to an `Entry` class and return them in a list."""
     return [Entry(*i) for i in notes]
