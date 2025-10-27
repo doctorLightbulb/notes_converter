@@ -2,7 +2,7 @@
 
 import sqlite3
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Dict, List
 
 from notes_converter.utils.checkers import SystemMemory, check_required_memory
 from notes_converter.utils.constants import DATA_PATH
@@ -75,42 +75,8 @@ class NotesConverter:
             # Database initialization.
             connection.execute(CREATE_TABLE_QUERY)
 
-            # Process all given input files (either 1 or more).
-            for path in self.input_paths:
-                raw_notes = load_csv(path)
-
-                # Process the notes of a given file.
-                notes_segment = []
-                for _ in raw_notes:
-                    note = Note(*_)
-                    note.mapping = mapped_names
-                    note.clean_note_text()
-                    note.create_reference()
-
-                    notes_segment.append(note)
-
-                    # Save the notes to the database in segments
-                    # to minimize memory consumption.
-                    if len(notes_segment) == 99:
-                        save_to_database(connection, notes_segment)
-                        notes_segment.clear()
-
-            # Retrieve notes by book, sorted by chapter and verse.
-            # The book can also be a General Conference address or
-            # any other Church manual or book.
-            for record in book_names.keys():
-                writer.write_heading(record)
-                for book in book_names[record]:
-                    retrieved_notes = connection.execute(
-                        FETCH_NOTES.format(book)
-                    ).fetchall()
-
-                    # If there are no notes for a given book, skip to the next book.
-                    if not retrieved_notes:
-                        continue
-
-                    book_notes = create_notes(retrieved_notes)
-                    writer.write_notes(book_notes)
+            clean_data(connection, self.input_paths, mapped_names)
+            create_docx(connection, writer, book_names)
 
         # TODO: Add support for splitting the notes on tag or notebook.
         connection.close()
@@ -123,3 +89,42 @@ class NotesConverter:
             "File saved in the following location:\n",
             f"{self.output_path.parent}",
         )
+
+
+def clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
+    # Process all given input files (either 1 or more).
+    for path in paths:
+        raw_notes = load_csv(path)
+
+        # Process the notes of a given file.
+        notes_segment = []
+        for _tuple in raw_notes:
+            note = Note(*_tuple)
+            note.mapping = mapping
+            note.clean_note_text()
+            note.create_reference()
+
+            notes_segment.append(note)
+
+            # Save the notes to the database in segments
+            # to minimize memory consumption.
+            if len(notes_segment) == 99:
+                save_to_database(connection, notes_segment)
+                notes_segment.clear()
+
+
+def create_docx(connection, writer: DocxWriter, books: Dict[str, str]) -> None:
+    # Retrieve notes by book, sorted by chapter and verse.
+    # The book can also be a General Conference address or
+    # any other Church manual or book.
+    for record in books.keys():
+        writer.write_heading(record)
+        for book in books[record]:
+            retrieved_notes = connection.execute(FETCH_NOTES.format(book)).fetchall()
+
+            # If there are no notes for a given book, skip to the next book.
+            if not retrieved_notes:
+                continue
+
+            book_notes = create_notes(retrieved_notes)
+            writer.write_notes(book_notes)
