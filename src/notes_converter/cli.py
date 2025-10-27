@@ -68,7 +68,7 @@ class Cli:
         output_path = Path(self.args.output)
 
         # Required values:
-        self.converter.input_path = input_path
+        self.converter.input_paths = input_path
         self.converter.output_path = output_path
 
         # Optional values:
