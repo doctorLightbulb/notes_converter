@@ -1,17 +1,20 @@
 """A module containing all the GUI elements for `notes_converter`."""
 
 import tkinter as tk
+from pathlib import Path
 from tkinter import messagebox, ttk
 from tkinter.filedialog import askopenfilenames, asksaveasfilename
+from typing import List
 
+from notes_converter.converter import NotesConverter
 from notes_converter.utils.constants import ROOT_PATH
 
 
 class MainWindow(tk.Tk):
-    def __init__(self, converter):
+    def __init__(self, converter: NotesConverter):
         super().__init__()
         self.converter = converter
-        self.input_paths = []
+        self.input_paths: List[Path] = []
         self.input_value = tk.StringVar(self, value="")
         self.output_path = tk.StringVar(self)
 
@@ -81,8 +84,8 @@ class MainWindow(tk.Tk):
         `docx` files.
         """
         # Execution setup:
-        self.converter.input_path = self.input_paths
-        self.converter.output_path = self.output_path.get()
+        self.converter.input_paths = self.input_paths
+        self.converter.output_path = Path(self.output_path.get())
 
         self.start_progressbar()
 
