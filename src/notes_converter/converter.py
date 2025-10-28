@@ -1,4 +1,10 @@
-"""A module containing the `NotesConverter` engine."""
+"""
+Contains the main converter engine.
+
+Classes
+-------
+- NotesConverter()
+"""
 
 import sqlite3
 from pathlib import Path
@@ -38,7 +44,7 @@ class NotesConverter:
     def __init__(self) -> None:
         self.input_paths: List[Path] = []
         self.output_path = Path()
-        self.template_path = None
+        self.template_path = Path()
         self._smu = SystemMemory()
 
     def convert(self):
@@ -71,8 +77,8 @@ class NotesConverter:
             # Database initialization.
             connection.execute(CREATE_TABLE)
 
-            clean_data(connection, self.input_paths, mapped_names)
-            create_docx(connection, writer, book_names)
+            _clean_data(connection, self.input_paths, mapped_names)
+            _create_docx(connection, writer, book_names)
 
         # TODO: Add support for splitting the notes on tag or notebook.
         connection.close()
@@ -89,7 +95,7 @@ class NotesConverter:
         )
 
 
-def clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
+def _clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
     # Process all given input files (either 1 or more).
     for path in paths:
         raw_notes = load_csv(path)
@@ -111,7 +117,7 @@ def clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
                 notes_segment.clear()
 
 
-def create_docx(connection, writer: DocxWriter, books: Dict[str, str]) -> None:
+def _create_docx(connection, writer: DocxWriter, books: Dict[str, str]) -> None:
     # Retrieve notes by book, sorted by chapter and verse.
     # The book can also be a General Conference address or
     # any other Church manual or book.

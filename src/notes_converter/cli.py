@@ -3,15 +3,17 @@ A module containing all CLI elements and functions for `notes_converter`.
 
 Classes
 -------
-Cli
+- Cli()
 
 Functions
 ---------
-parse_args()
+- parse_args()
 """
 
 import argparse
 from pathlib import Path
+
+from notes_converter.converter import NotesConverter
 
 # TODO:
 # Transition from argsparse to click.
@@ -49,16 +51,20 @@ class Cli:
     """
     A simple command-line interface for program execution.
 
-    Parameters
+    Attributes
     ----------
-    None
+    args : argsparse.Namespace
+        An `argsparse` namespace object.
+    converter : NotesConverter
+        The `NotesConverter` class.
 
     Methods
     -------
-    run : Convert with the provided arguments.
+    run():
+        Convert with the provided arguments.
     """
 
-    def __init__(self, args, converter) -> None:
+    def __init__(self, args: argparse.Namespace, converter: NotesConverter) -> None:
         self.args = args
         self.converter = converter
 

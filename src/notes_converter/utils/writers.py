@@ -1,4 +1,14 @@
-"""A module containing all functions used to write data to a file or files."""
+"""
+Contains classes and functions to write data to files.
+
+Classes
+-------
+- DocxWriter()
+
+Functions
+---------
+- write_to_txt()
+"""
 
 import getpass
 from datetime import datetime
@@ -22,7 +32,7 @@ from notes_converter.utils.structures import Entry
 class DocxWriter:
     """Represents a Microsoft Word document.
 
-    Parameters
+    Attributes
     ----------
     output_path : Path
         The location to save the Word document.
@@ -30,9 +40,17 @@ class DocxWriter:
         The path to a Word document template. `None`
         means that the default template will be used.
 
+    Methods
+    -------
+    write_heading():
+        Create a heading in the Microsoft Word document.
+    write_notes():
+        Writes notes to a Microsoft Word document.
+
     Returns
     -------
-    An empty Word document at the given `output_path`.
+    None
+        An empty Word document at the given `output_path`.
     """
 
     def __init__(self, output_path, template_path=None) -> None:
