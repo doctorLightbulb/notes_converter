@@ -7,18 +7,18 @@ from pathlib import Path
 
 CREATE_TABLE_QUERY = """
     CREATE TABLE IF NOT EXISTS notes(
-        type,
-        title,
-        note_text,
-        source_location,
-        tags,
-        notebooks,
-        study_set,
-        last_updated,
-        created,
-        reference,
-        chapter,
-        verse,
+        type                TEXT,
+        title               TEXT,
+        note_text           TEXT,
+        source_location     TEXT,
+        tags                TEXT,
+        notebooks           TEXT,
+        study_set           TEXT,
+        last_updated        TEXT,
+        created             TEXT,
+        reference           TEXT,
+        chapter             INTEGER,
+        verse               INTEGER,
         UNIQUE(created)
     )
 """
@@ -46,7 +46,7 @@ FETCH_NOTES = """
         verse 
     FROM notes
     WHERE reference LIKE "{}%"
-    ORDER BY COALESCE(chapter, verse, created)
+    ORDER BY chapter ASC, verse ASC, created ASC;
 """
 
 
