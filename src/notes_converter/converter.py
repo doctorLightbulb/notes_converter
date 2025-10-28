@@ -2,18 +2,14 @@
 
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from notes_converter.utils.checkers import SystemMemory, check_required_memory
 from notes_converter.utils.constants import DATA_PATH
-from notes_converter.utils.database import (
-    CREATE_TABLE_QUERY,
-    FETCH_NOTES,
-    save_to_database,
-)
+from notes_converter.utils.database import CREATE_TABLE, FETCH_NOTES, save_to_database
 from notes_converter.utils.loaders import load_csv, load_json
 from notes_converter.utils.structures import Note, create_notes
-from notes_converter.utils.writers import DocxWriter, write_to_txt
+from notes_converter.utils.writers import DocxWriter
 
 
 class NotesConverter:
@@ -40,7 +36,7 @@ class NotesConverter:
     """
 
     def __init__(self) -> None:
-        self.input_paths: List[Any] = []
+        self.input_paths: List[Path] = []
         self.output_path = Path()
         self.template_path = None
         self._smu = SystemMemory()
@@ -73,7 +69,7 @@ class NotesConverter:
         with sqlite3.connect(database_path) as connection:
 
             # Database initialization.
-            connection.execute(CREATE_TABLE_QUERY)
+            connection.execute(CREATE_TABLE)
 
             clean_data(connection, self.input_paths, mapped_names)
             create_docx(connection, writer, book_names)
@@ -81,13 +77,15 @@ class NotesConverter:
         # TODO: Add support for splitting the notes on tag or notebook.
         connection.close()
 
-        return "".join(self.show_saved_status())
+        return self.show_saved_status()
 
     def show_saved_status(self):
-        return (
-            f"{self.output_path.stem} saved successfully!\n",
-            "File saved in the following location:\n",
-            f"{self.output_path.parent}",
+        return "".join(
+            (
+                f"{self.output_path.stem} saved successfully!\n",
+                "File saved in the following location:\n",
+                f"{self.output_path.parent}",
+            )
         )
 
 
