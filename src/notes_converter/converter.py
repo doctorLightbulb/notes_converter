@@ -7,6 +7,7 @@ Classes
 """
 
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
@@ -45,7 +46,10 @@ class NotesConverter:
         self.input_paths: List[Path] = []
         self.output_path = Path()
         self.template_path = Path()
+        self.database_path = Path.home() / "Downloads"
         self._smu = SystemMemory()
+
+        self.database_is_virtual = False
 
     def convert(self):
         """
@@ -60,14 +64,17 @@ class NotesConverter:
 
         if enough_memory:
             database_path = ":memory:"
+            self.database_is_virtual = not self.database_is_virtual
         else:
-            database_path = "some/path"
+            database_path = (
+                self.database_path
+                / f"Temporary Gospel Library Cache ({str(datetime.now())})"
+            )
 
-        # Process notes and load database
+        # Load reference data:
         mapped_names = load_json(DATA_PATH / "book_codes.json")
         book_names = load_json(DATA_PATH / "standard_works.json")
 
-        # Word document writer
         writer = DocxWriter(self.output_path, self.template_path)
 
         # Due to the temporary database functionality, all database
@@ -82,6 +89,10 @@ class NotesConverter:
 
         # TODO: Add support for splitting the notes on tag or notebook.
         connection.close()
+
+        # Delete the temporary database if an on-disk one was used:
+        if not self.database_is_virtual:
+            database_path.unlink()
 
         return self.show_saved_status()
 
