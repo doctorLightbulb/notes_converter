@@ -64,8 +64,30 @@ FETCH_NOTES = """
     ORDER BY chapter ASC, verse ASC, created ASC;
 """
 
+FETCH_NOTES_BY_NOTEBOOK = """
+    SELECT type,
+        title,
+        note_text,
+        source_location,
+        tags,
+        notebooks,
+        study_set,
+        last_updated,
+        created,
+        reference,
+        chapter,
+        verse 
+    FROM notes
+    WHERE reference LIKE "{}%" AND notebooks LIKE "%{}%"
+    ORDER BY chapter ASC, verse ASC, created ASC;
+"""
+
 FETCH_DATE = """
     SELECT last_updated, rowid FROM notes WHERE created LIKE "{}"
+"""
+
+FETCH_NOTEBOOKS = """
+    SELECT notebooks FROM notes
 """
 
 UPDATE_NOTE = """

@@ -44,6 +44,11 @@ def parse_args():
         type=str,
         help="The path to a custom template.",
     )
+    parser.add_argument(
+        "--group-by-notebook",
+        action=argparse.BooleanOptionalAction,
+        help="Group notes by notebook.",
+    )
     return parser.parse_args()
 
 
@@ -80,6 +85,9 @@ class Cli:
         # Optional values:
         if self.args.template:
             self.converter.template_path = Path(self.args.template)
+
+        if self.args.group_by_notebook:
+            self.converter.group_by_notebook = self.args.group_by_notebook
 
         status = self.converter.convert()
         print(status)

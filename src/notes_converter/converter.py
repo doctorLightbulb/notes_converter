@@ -6,14 +6,21 @@ Classes
 - NotesConverter()
 """
 
+import itertools
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from notes_converter.utils.checkers import SystemMemory, check_required_memory
 from notes_converter.utils.constants import DATA_PATH
-from notes_converter.utils.database import CREATE_TABLE, FETCH_NOTES, save_to_database
+from notes_converter.utils.database import (
+    CREATE_TABLE,
+    FETCH_NOTEBOOKS,
+    FETCH_NOTES,
+    FETCH_NOTES_BY_NOTEBOOK,
+    save_to_database,
+)
 from notes_converter.utils.loaders import load_csv, load_json
 from notes_converter.utils.structures import Note, create_notes
 from notes_converter.utils.writers import DocxWriter
@@ -50,6 +57,7 @@ class NotesConverter:
         self._smu = SystemMemory()
 
         self.database_is_virtual = False
+        self.group_by_notebook = False
 
     def convert(self):
         """
@@ -68,14 +76,12 @@ class NotesConverter:
         else:
             database_path = (
                 self.database_path
-                / f"Temporary Gospel Library Cache ({str(datetime.now())})"
+                / f"Temporary Gospel Library Cache ({str(datetime.now()).split()[0]}).db"
             )
 
         # Load reference data:
         mapped_names = load_json(DATA_PATH / "book_codes.json")
         book_names = load_json(DATA_PATH / "standard_works.json")
-
-        writer = DocxWriter(self.output_path, self.template_path)
 
         # Due to the temporary database functionality, all database
         # execution must be done without closing the connection.
@@ -83,11 +89,27 @@ class NotesConverter:
 
             # Database initialization.
             connection.execute(CREATE_TABLE)
+            writer = DocxWriter(self.output_path, self.template_path)
 
             _clean_data(connection, self.input_paths, mapped_names)
-            _create_docx(connection, writer, book_names)
 
-        # TODO: Add support for splitting the notes on tag or notebook.
+            if self.group_by_notebook:
+                notebooks = extract_notebooks(
+                    connection.execute(FETCH_NOTEBOOKS).fetchall(),
+                )
+                for notebook in notebooks:
+                    docx_name_path = build_file_name(self.output_path, notebook)
+                    writer = DocxWriter(docx_name_path)
+                    _create_notebook_docx(
+                        connection,
+                        FETCH_NOTES_BY_NOTEBOOK,
+                        notebook,
+                        writer,
+                        book_names,
+                    )
+            else:
+                _create_docx(connection, FETCH_NOTES, writer, book_names)
+
         connection.close()
 
         # Delete the temporary database if an on-disk one was used:
@@ -104,6 +126,18 @@ class NotesConverter:
                 f"{self.output_path.parent}",
             )
         )
+
+
+def build_file_name(path: Path, notebook) -> Path:
+    parent = path.parent
+    name = path.stem
+    extension = path.suffix
+    file_name = f"{name} ({notebook}){extension}"
+    return Path(parent, file_name)
+
+
+def extract_notebooks(raw_notebooks: List[Tuple[str]]):
+    return {_ for i in raw_notebooks for _ in i[0].split("; ") if i[0].strip()}
 
 
 def _clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
@@ -128,14 +162,37 @@ def _clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
                 notes_segment.clear()
 
 
-def _create_docx(connection, writer: DocxWriter, books: Dict[str, str]) -> None:
+def _create_docx(
+    connection, query: str, writer: DocxWriter, books: Dict[str, str]
+) -> None:
     # Retrieve notes by book, sorted by chapter and verse.
     # The book can also be a General Conference address or
     # any other Church manual or book.
     for record in books.keys():
         writer.write_heading(record)
         for book in books[record]:
-            retrieved_notes = connection.execute(FETCH_NOTES.format(book)).fetchall()
+            retrieved_notes = connection.execute(query.format(book)).fetchall()
+
+            # If there are no notes for a given book, skip to the next book.
+            if not retrieved_notes:
+                continue
+
+            book_notes = create_notes(retrieved_notes)
+            writer.write_notes(book_notes)
+
+
+def _create_notebook_docx(
+    connection, query: str, notebook: str, writer: DocxWriter, books: Dict[str, str]
+) -> None:
+    # Retrieve notes by book, sorted by chapter and verse.
+    # The book can also be a General Conference address or
+    # any other Church manual or book.
+    for record in books.keys():
+        writer.write_heading(record)
+        for book in books[record]:
+            retrieved_notes = connection.execute(
+                query.format(book, notebook)
+            ).fetchall()
 
             # If there are no notes for a given book, skip to the next book.
             if not retrieved_notes:
