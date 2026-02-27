@@ -30,7 +30,8 @@ from notes_converter.utils.structures import Entry
 
 
 class DocxWriter:
-    """Represents a Microsoft Word document.
+    """
+    Represents a Microsoft Word document.
 
     Attributes
     ----------
@@ -100,7 +101,7 @@ class DocxWriter:
         self._doc.add_heading(heading, level=1)
 
     def write_notes(self, notes: List[Entry]):
-        """Write notes to a styled Word document."""
+        """Writes notes to a styled Word document."""
 
         for note in notes:
             # Note header and date:
@@ -225,16 +226,17 @@ def write_to_docx(
 
 
 def _convert_datetime(note_time: str) -> str:
-    """Convert the time to a human-readable format."""
+    """Converts the time to a human-readable format."""
     default_time = datetime.fromisoformat(note_time.replace("Z", "+00:00"))
     dt = default_time.replace(tzinfo=pytz.utc)
     pacific_tz = pytz.timezone("America/Los_Angeles")
     dt_pacific = dt.astimezone(pacific_tz)
-    return dt_pacific.strftime("%B %d, %Y, %I:%M %p %Z")
+    return dt_pacific.strftime("%B %e, %Y, %I:%M %p %Z").replace("  ", " ")
 
 
 def _add_hyperlink(paragraph, url, text, color="#0000EE", underline=None):
-    """Place a hyperlink within a `paragraph` object.
+    """
+    Places a hyperlink within a `paragraph` object.
 
     Parameters
     ----------
