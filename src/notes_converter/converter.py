@@ -25,6 +25,8 @@ from notes_converter.utils.loaders import load_csv, load_json
 from notes_converter.utils.structures import Note, create_notes
 from notes_converter.utils.writers import DocxWriter
 
+type DatabaseConnection = sqlite3.Connection
+
 
 class NotesConverter:
     """
@@ -61,7 +63,7 @@ class NotesConverter:
 
     def convert(self):
         """
-        Convert the specified files.
+        Converts the specified files.
 
         The conversion process used depends on whether the system has enough
         memory for the conversion. If it does, a virtual SQLite3 database is
@@ -140,7 +142,26 @@ def extract_notebooks(raw_notebooks: List[Tuple[str]]):
     return {_ for i in raw_notebooks for _ in i[0].split("; ") if i[0].strip()}
 
 
-def _clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
+def _clean_data(
+    connection: DatabaseConnection, paths: List[Path], mapping: Dict[str, str]
+) -> None:
+    """
+    Cleans raw data and commits it to a database.
+
+    Parameters
+    ----------
+    connection : DatabaseConnection
+        A connection to a sqlite3 database, either in memory or on disk.
+    paths : List[Path]
+        Path(s) to one or more files to process.
+    mapping : Dict[str, str]
+        A map of book appreviations to their full names.
+
+    Returns
+    -------
+    None
+    """
+
     # Process all given input files (either 1 or more).
     for path in paths:
         raw_notes = load_csv(path)
@@ -163,7 +184,10 @@ def _clean_data(connection, paths: List[Path], mapping: Dict[str, str]) -> None:
 
 
 def _create_docx(
-    connection, query: str, writer: DocxWriter, books: Dict[str, str]
+    connection: DatabaseConnection,
+    query: str,
+    writer: DocxWriter,
+    books: Dict[str, str],
 ) -> None:
     # Retrieve notes by book, sorted by chapter and verse.
     # The book can also be a General Conference address or
@@ -182,7 +206,11 @@ def _create_docx(
 
 
 def _create_notebook_docx(
-    connection, query: str, notebook: str, writer: DocxWriter, books: Dict[str, str]
+    connection: DatabaseConnection,
+    query: str,
+    notebook: str,
+    writer: DocxWriter,
+    books: Dict[str, str],
 ) -> None:
     # Retrieve notes by book, sorted by chapter and verse.
     # The book can also be a General Conference address or
