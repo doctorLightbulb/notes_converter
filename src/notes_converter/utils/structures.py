@@ -18,6 +18,8 @@ Functions
 import re
 from typing import Dict, List, Tuple
 
+from notes_converter.utils.converters import replace_quotes
+
 # Regular expressions:
 book_pattern = re.compile(
     r"churchofjesuschrist.org/study/scriptures/(.*)/(.*).*/(\d+)\?"
@@ -28,6 +30,7 @@ verse_pattern = re.compile(r"=p(\d+)")
 ruler_pattern = re.compile(r"\s\s(-){2,}\s\s")
 
 
+# The Note class processes the information stored in it (pre-database storage).
 class Note:
     """
     Represents a single note.
@@ -91,7 +94,7 @@ class Note:
         self.mapping: Dict[str, str] = dict()
 
     def create_reference(self):
-        """Create the scriptural reference of the form: Mormon 4:10."""
+        """Creates the scriptural reference of the form `Mormon 4:10`."""
         book = get_book_name(book_pattern, self.source_location, self.mapping)
         chapter = get_chapter_number(chapter_pattern, self.source_location)
         verse = get_verse_numbers(verse_pattern, self.source_location)
@@ -101,19 +104,21 @@ class Note:
 
     def clean_note_text(self):
         """
-        Clean the `note_text` by removing  unwanted artifacts.
+        Cleans the `note_text` by removing  unwanted artifacts.
 
         Removes newline characters and replaces simple hyphens and quotation
-        marks with fancy versions and render ugly bracketed dates into prettier,
+        marks with fancy versions and renders ugly bracketed dates into prettier,
         long-hand versions.
         """
         text = self.note_text.replace("\n", " ")  # Combine split lines.
         paragraphs = text.replace("   ", "\n")  # Redefine paragaphs.
         unruled = re.sub(ruler_pattern, "", paragraphs)
-        self.note_text = unruled
+        replaced_quotes = replace_quotes(unruled)
+
+        self.note_text = replaced_quotes
 
     def values(self):
-        """Return a list of all note values."""
+        """Returns a list of all note values."""
         return [
             self.type_,
             self.title,
@@ -143,7 +148,7 @@ class Note:
 
 def get_book_name(pattern: re.Pattern, url: str, mappings: Dict[str, str]) -> str:
     """
-    Search for a book name with the given `pattern`.
+    Searches for a book name with the given `pattern`.
 
     If one is found, convert it using the dictionary key-value pairs in
     `mappings`. If none is found, return `url` unmodified.
@@ -171,7 +176,7 @@ def get_book_name(pattern: re.Pattern, url: str, mappings: Dict[str, str]) -> st
 
 def get_chapter_number(pattern: re.Pattern, url: str) -> int | str:
     """
-    Search for a chapter number with the given `pattern`.
+    Searches for a chapter number with the given `pattern`.
 
     If one is found, convert it to an integer and return it. If none is
     found, return `url` unmodified.
@@ -196,7 +201,7 @@ def get_chapter_number(pattern: re.Pattern, url: str) -> int | str:
 
 def get_verse_numbers(pattern: re.Pattern, url: str) -> int | str:
     """
-    Search for a verse number with the given `pattern`.
+    Searches for a verse number with the given `pattern`.
 
     If one is found, convert it to an integer and return it. If none is found,
     return `url` unmodified.
@@ -219,6 +224,7 @@ def get_verse_numbers(pattern: re.Pattern, url: str) -> int | str:
     return int(verse.group(1))
 
 
+# The Entry class stores a single note retrieved from the database (post database).
 class Entry:
     """
     Represents a single note.
@@ -296,5 +302,5 @@ class Entry:
 
 
 def create_notes(notes: List[Tuple]) -> List[Entry]:
-    """Add each note to an `Entry` class and return the entries in a list."""
+    """Adds each note to an `Entry` class and return the entries in a list."""
     return [Entry(*i) for i in notes]
