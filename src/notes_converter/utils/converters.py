@@ -2,7 +2,7 @@
 
 import re
 from collections import namedtuple
-from typing import Dict, List, Union
+from typing import Dict, List, Match, Union
 
 TAGS: set[str] = set()
 NOTEBOOKS: set[str] = set()
@@ -181,7 +181,8 @@ def extract_study_data(raw_data, name_maps):
     return dict(zip(key_maps, values))
 
 
-def build_study_references(data):
+def build_study_references(data: Dict[str, str | None]) -> str:
+    """Composes references of the form `Mormon 5:2`."""
     reference_numbers = f"{data["verse"]}"
     books = ""
     if "chapter" in data.keys():
@@ -195,3 +196,30 @@ def build_study_references(data):
     reference = books + reference_numbers
 
     return reference
+
+
+mapping = {
+    ' "': " “",  # Beginning quotation (e.g.,
+    '" ': "” ",  # Ending quotation
+    '."': ".”",  # Ending quotation
+    '"\n': "”\n",  # Ending quotation
+    '"': "“",  # Default Quote (e.g.,
+    '\n"': "\n“",  # Needed for raw strings only (e.g., \n"Good morning...").
+    "'": "’",  # Default apostrophie (e.g., I'm).
+    " '": " ‘",  # Beginning apostrophie (e.g., 'tis).
+}
+
+
+def replace(m: Match) -> str:
+    return mapping[m.group(0)]
+
+
+def replace_quotes(text: str) -> str:
+    """Replaces plain quotation marks and apostrophies with fancy ones."""
+    pattern = re.compile(
+        r"""
+        (\s\"|\"\s|\.\"|\"|\s\'|\')
+    """,
+        re.VERBOSE,
+    )
+    return pattern.sub(replace, text)
