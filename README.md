@@ -12,7 +12,7 @@ Welcome to `notes_converter`, a simple script that converts our exported `.csv` 
 ## What it does
 
 * ✅ Converts one or more `.csv` files into at least one MS Word document.
-* ✅ Temporarily stores all notes in a SQLite3 database during conversion (coming soon).
+* ✅ Temporarily stores all notes in a SQLite3 database during conversion.
 
 ## What it does not do
 
@@ -90,7 +90,7 @@ Optionally, scan the cloned repository with your anti-malware software.
 After placing your copy of the repository in a folder, open the folder in a terminal window and create a virtual environment:
 
 ```powershell
-python -m venv venv --prompt="notes"
+python -m venv .venv --prompt="notes"
 ```
 
 Activate the virtual environment (which command you use will depend on your operating system):
@@ -98,13 +98,13 @@ Activate the virtual environment (which command you use will depend on your oper
 **Windows:**
 
 ```powershell
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 **Linux:**
 
 ```bash
-. venv/bin/activate
+. .venv/bin/activate
 ```
 
 Next, install the dependencies:
