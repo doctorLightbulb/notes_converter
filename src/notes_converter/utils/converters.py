@@ -207,6 +207,7 @@ mapping = {
     '\n"': "\n“",  # Needed for raw strings only (e.g., \n"Good morning...").
     "'": "’",  # Default apostrophie (e.g., I'm).
     " '": " ‘",  # Beginning apostrophie (e.g., 'tis).
+    "\n'": "\n‘",
 }
 
 
@@ -218,7 +219,7 @@ def replace_quotes(text: str) -> str:
     """Replaces plain quotation marks and apostrophies with fancy ones."""
     pattern = re.compile(
         r"""
-        (\s\"|\"\s|\.\"|\"|\s\'|\')
+        (\s\"|\"\s|\.\"|\"|\s\'|\n\'|\')
     """,
         re.VERBOSE,
     )
