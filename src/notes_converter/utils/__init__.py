@@ -11,14 +11,10 @@ converters:
     Contains functions for building and cleaning notes (old, may be removed).
 database:
     Contains the Database class and related query constants.
-decorators:
-    Contains debugging and duplicate removal functions.
 exceptions:
     Contains the `NoAvailableTemplate` exception.
 loaders:
     Contains the `load_json()` and `load_csv()` functions.
-sorters:
-    Contains a function that sorts by a given list of string values.
 structures:
     Contains the `Note` and `Entry` classes.
 writers:
