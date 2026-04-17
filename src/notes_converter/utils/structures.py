@@ -20,7 +20,7 @@ from typing import Dict, List, Tuple
 
 from notes_converter.utils.converters import replace_quotes
 
-# Regular expressions:
+# REGULAR EXPRESSIONS:
 book_pattern = re.compile(
     r"churchofjesuschrist.org/study/scriptures/(.*)/(.*).*/(\d+)\?"
 )
@@ -30,6 +30,7 @@ verse_pattern = re.compile(r"=p(\d+)")
 ruler_pattern = re.compile(r"\s\s(-){2,}\s\s")
 
 
+# NOTE CLASS
 # The Note class processes the information stored in it (pre-database storage).
 class Note:
     """
@@ -143,7 +144,7 @@ class Note:
         )
 
 
-# HELPER FUNCTIONS FOR CLASS NOTE
+# HELPER FUNCTIONS FOR THE NOTE CLASS
 
 
 def get_book_name(pattern: re.Pattern, url: str, mappings: Dict[str, str]) -> str:
@@ -224,6 +225,7 @@ def get_verse_numbers(pattern: re.Pattern, url: str) -> int | str:
     return int(verse.group(1))
 
 
+# ENTRY CLASS
 # The Entry class stores a single note retrieved from the database (post database).
 class Entry:
     """
@@ -301,6 +303,9 @@ class Entry:
         self.verse = verse
 
 
+# OTHER FUNCTIONS
+
+
 def create_notes(notes: List[Tuple]) -> List[Entry]:
-    """Adds each note to an `Entry` class and return the entries in a list."""
+    """Adds each note to an `Entry` class and returns the entries in a list."""
     return [Entry(*i) for i in notes]
