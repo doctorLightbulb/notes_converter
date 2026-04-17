@@ -15,7 +15,7 @@ from typing import Dict
 
 def load_json(path: Path | str) -> Dict[str, str]:
     """
-    Load a `.json` file in `utf-8` encoding.
+    Loads a `.json` file in `utf-8` encoding.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def load_json(path: Path | str) -> Dict[str, str]:
 
 def load_csv(path: Path | str):
     """
-    Load a `csv` file in `utf-8` encoding and skip the header line.
+    Loads a `csv` file in `utf-8` encoding and skip the header line.
 
     Parameters
     ----------
