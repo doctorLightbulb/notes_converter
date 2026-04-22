@@ -11,11 +11,9 @@ Functions
 """
 
 import getpass
-from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import pytz
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.opc.exceptions import PackageNotFoundError
@@ -23,6 +21,7 @@ from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
 
 from notes_converter.utils.constants import TEMPLATE_PATH
+from notes_converter.utils.converters import convert_datetime
 from notes_converter.utils.exceptions import NoAvailableTemplate
 from notes_converter.utils.structures import Entry
 
@@ -104,7 +103,7 @@ class DocxWriter:
         for note in notes:
             # Note header and date:
             self._doc.add_heading(note.title, level=2)
-            self._doc.add_paragraph(_convert_datetime(note.created), style="Date")
+            self._doc.add_paragraph(convert_datetime(note.created), style="Date")
 
             # Note body:
             for index, body in enumerate(note.note_text.split("\n")):
@@ -130,15 +129,6 @@ class DocxWriter:
 
 
 # Helper functions
-
-
-def _convert_datetime(note_time: str) -> str:
-    """Converts the time to a human-readable format."""
-    default_time = datetime.fromisoformat(note_time.replace("Z", "+00:00"))
-    dt = default_time.replace(tzinfo=pytz.utc)
-    pacific_tz = pytz.timezone("America/Los_Angeles")
-    dt_pacific = dt.astimezone(pacific_tz)
-    return dt_pacific.strftime("%B %e, %Y, %I:%M %p %Z").replace("  ", " ")
 
 
 def _add_hyperlink(paragraph, url, text, color="#0000EE", underline=None):
@@ -209,7 +199,7 @@ def write_to_txt(notes, output_path, mode="w"):
     with open(output_path, mode, encoding="utf-8") as f:
         for note in notes:
             f.write("\n\n" + note.title + "\n")
-            f.write(_convert_datetime(note.created) + "\n\n")
+            f.write(convert_datetime(note.created) + "\n\n")
             for body in note.note_text:
                 f.write(body)
             f.write("\n" + note.reference)
