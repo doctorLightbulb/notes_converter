@@ -172,6 +172,7 @@ def _clean_data(
             note.mapping = mapping
             note.clean_note_text()
             note.create_reference()
+            note.resolve_titles()
 
             notes_segment.append(note)
 

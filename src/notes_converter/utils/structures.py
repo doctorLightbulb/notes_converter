@@ -63,6 +63,9 @@ class Note:
         Creates a scriptural reference of the form Mormon: 4:10.
     clean_note_text():
         Cleans the body of the note by removing artifacts.
+    resolve_titles():
+        Assigns the reference to notes with no titles ("undefined").
+        Call _after_ calling `create_reference()`.
     values():
         Returns all attribute values as a list.
     """
@@ -117,6 +120,17 @@ class Note:
         replaced_quotes = replace_quotes(unruled)
 
         self.note_text = replaced_quotes
+
+    def resolve_titles(self, substitute=True):
+        """
+        Assigns the reference as a title to notes without titles.
+        This method should be called after calling `create_references()`.
+        """
+        if self.title == "undefined":
+            if substitute:
+                self.title = self.reference
+            else:
+                self.title = ""
 
     def values(self):
         """Returns a list of all note values."""
