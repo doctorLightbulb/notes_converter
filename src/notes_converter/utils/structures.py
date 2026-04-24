@@ -18,7 +18,7 @@ Functions
 import re
 from typing import Dict, List, Tuple
 
-from notes_converter.utils.converters import replace_quotes
+from notes_converter.utils.converters import convert_datetime, replace_quotes
 
 # REGULAR EXPRESSIONS:
 book_pattern = re.compile(
@@ -131,6 +131,11 @@ class Note:
                 self.title = self.reference
             else:
                 self.title = ""
+
+    def resolve_dates(self):
+        """Convert dates to a human readable format."""
+        self.created = convert_datetime(self.created, True)
+        self.last_updated = convert_datetime(self.last_updated, True)
 
     def values(self):
         """Returns a list of all note values."""
