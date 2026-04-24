@@ -4,6 +4,8 @@ import re
 from datetime import datetime
 from typing import Match
 
+import pytz
+
 MAPPING = {
     ' "': " “",  # Beginning quotation (e.g.,
     '" ': "” ",  # Ending quotation
@@ -53,7 +55,7 @@ def convert_datetime(note_time: str, timezone: bool = False) -> str:
     """
 
     raw_datetime = datetime.fromisoformat(note_time)
-    current_timezone = datetime.now().astimezone().tzinfo
+    current_timezone = pytz.timezone("America/Los_Angeles")
     dt = raw_datetime.astimezone(current_timezone)
 
     meridian = {"PM": "p.m."}

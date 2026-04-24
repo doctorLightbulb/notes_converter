@@ -104,7 +104,7 @@ class DocxWriter:
             # Note header and date:
             if note.title:  # Allow for no titles
                 self._doc.add_heading(note.title, level=2)
-            self._doc.add_paragraph(convert_datetime(note.created), style="Date")
+            self._doc.add_paragraph(convert_datetime(note.created, True), style="Date")
 
             # Note body:
             for index, body in enumerate(note.note_text.split("\n")):
@@ -121,8 +121,8 @@ class DocxWriter:
             # to that?
 
             # NOTE: Any note created directly in Annotations in the Gospel Library
-            # app or Gospel Library Online will have an "undefined" source
-            # location.
+            # app or Gospel Library Online, with no associated reference, will have
+            # an "undefined" source location.
 
             p = self._doc.add_paragraph(style="Link")
             _add_hyperlink(p, note.source_location, note.reference)
