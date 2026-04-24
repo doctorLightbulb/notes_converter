@@ -102,13 +102,16 @@ class DocxWriter:
 
         for note in notes:
             # Note header and date:
-            self._doc.add_heading(note.title, level=2)
+            if note.title:  # Allow for no titles
+                self._doc.add_heading(note.title, level=2)
             self._doc.add_paragraph(convert_datetime(note.created), style="Date")
 
             # Note body:
             for index, body in enumerate(note.note_text.split("\n")):
                 if index == 0:  # Allow for no text indent on first paragraph.
-                    self._doc.add_paragraph(body, style="Head")
+                    if body:
+                        # Allow for links and tags that contain no paragraph.
+                        self._doc.add_paragraph(body, style="Head")
                     continue
                 self._doc.add_paragraph(body, style="Normal")
 
