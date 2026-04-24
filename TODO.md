@@ -3,11 +3,11 @@
 ## Changes
 
 * When two or more scriptural references match exactly, the note's heading should be combined upon conversion, with the dates separating the note's body.
-* Convert plain open and close quotes and apostophies to their respective fancy versions, thus eliminating inconsistencies in the notes.
+* Convert plain open and close quotes and apostophies to their respective fancy versions, thus eliminating inconsistencies in the notes. (Done).
 * Make the open file and save file dialogs remember the last destinations they visited.
 * Add allowance for paragraph ranges (i.e. =p4-p6).
 * Need full support for General Conference references.
-* Add headers to separate notes by Old Testament, New Testament, Book of Mormon, etc.
+* Add headers to separate notes by Old Testament, New Testament, Book of Mormon, etc. (Done).
 
 ## Potential Issues
 
